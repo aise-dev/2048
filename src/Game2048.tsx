@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './Game2048.css';
+import { MCTS, type GameState } from './MCTS';
 
 type Board = number[][];
 
@@ -30,6 +31,9 @@ const Game2048: React.FC = () => {
   const [isReplaying, setIsReplaying] = useState(false);
   const [replayIndex, setReplayIndex] = useState(0);
   const [replaySpeed, setReplaySpeed] = useState(1000);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const [autoPlaySpeed, setAutoPlaySpeed] = useState(500);
+  const [mcts] = useState(() => new MCTS(1000, 100));
 
   function initializeBoard(): Board {
     const newBoard = Array(4).fill(null).map(() => Array(4).fill(0));
@@ -260,12 +264,39 @@ const Game2048: React.FC = () => {
     setGameOver(false);
     setIsReplaying(false);
     setReplayIndex(0);
+    setIsAutoPlaying(false);
     setGameSession({
       moves: [],
       finalScore: 0,
       startTime: Date.now()
     });
   };
+
+  const startAutoPlay = () => {
+    if (gameOver || isReplaying) return;
+    setIsAutoPlaying(true);
+  };
+
+  const stopAutoPlay = () => {
+    setIsAutoPlaying(false);
+  };
+
+  const makeAutoMove = useCallback(() => {
+    if (!isAutoPlaying || gameOver || isReplaying) return;
+
+    const gameState: GameState = {
+      board: board,
+      score: score,
+      gameOver: gameOver
+    };
+
+    const bestMove = mcts.getBestMove(gameState);
+    if (bestMove) {
+      handleMove(bestMove);
+    } else {
+      setIsAutoPlaying(false);
+    }
+  }, [isAutoPlaying, gameOver, isReplaying, board, score, mcts, handleMove]);
 
   const startReplay = () => {
     if (gameSession.moves.length === 0) return;
@@ -330,6 +361,16 @@ const Game2048: React.FC = () => {
     return () => clearTimeout(timer);
   }, [isReplaying, replayIndex, gameSession.moves, replaySpeed]);
 
+  useEffect(() => {
+    if (!isAutoPlaying || gameOver || isReplaying) return;
+
+    const timer = setTimeout(() => {
+      makeAutoMove();
+    }, autoPlaySpeed);
+
+    return () => clearTimeout(timer);
+  }, [isAutoPlaying, gameOver, isReplaying, makeAutoMove, autoPlaySpeed, board]);
+
   return (
     <div className="game-container" tabIndex={0}>
       <div className="game-header">
@@ -350,7 +391,7 @@ const Game2048: React.FC = () => {
       </div>
       
       <div className="game-instructions">
-        使用 WASD 键移动方块 {isReplaying && '(回放中...)'}
+        使用 WASD 键移动方块 {isReplaying && '(回放中...)'} {isAutoPlaying && '(AI自动游戏中...)'}
         <br />
         <small style={{color: '#999'}}>调试: 请按D键测试，查看控制台输出</small>
       </div>
@@ -359,7 +400,7 @@ const Game2048: React.FC = () => {
         <button 
           className="replay-button" 
           onClick={startReplay}
-          disabled={isReplaying || gameSession.moves.length === 0}
+          disabled={isReplaying || gameSession.moves.length === 0 || isAutoPlaying}
         >
           回放游戏
         </button>
@@ -369,6 +410,20 @@ const Game2048: React.FC = () => {
           disabled={!isReplaying}
         >
           停止回放
+        </button>
+        <button 
+          className="replay-button" 
+          onClick={startAutoPlay}
+          disabled={isAutoPlaying || gameOver || isReplaying}
+        >
+          AI自动游戏
+        </button>
+        <button 
+          className="replay-button" 
+          onClick={stopAutoPlay}
+          disabled={!isAutoPlaying}
+        >
+          停止AI
         </button>
         <button 
           className="replay-button" 
@@ -397,6 +452,20 @@ const Game2048: React.FC = () => {
               <option value={1000}>正常 (1秒)</option>
               <option value={500}>快 (0.5秒)</option>
               <option value={200}>很快 (0.2秒)</option>
+            </select>
+          </div>
+        )}
+        {isAutoPlaying && (
+          <div className="speed-control">
+            <label>AI速度:</label>
+            <select 
+              value={autoPlaySpeed} 
+              onChange={(e) => setAutoPlaySpeed(Number(e.target.value))}
+            >
+              <option value={1000}>慢 (1秒)</option>
+              <option value={500}>正常 (0.5秒)</option>
+              <option value={200}>快 (0.2秒)</option>
+              <option value={100}>很快 (0.1秒)</option>
             </select>
           </div>
         )}
