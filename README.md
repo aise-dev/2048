@@ -1,69 +1,107 @@
-# React + TypeScript + Vite
+# 2048 Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern implementation of the classic 2048 puzzle game built with React, TypeScript, and Vite. This version features an AI player powered by Monte Carlo Tree Search (MCTS) algorithm with advanced heuristics.
 
-Currently, two official plugins are available:
+![2048 Game Screenshot](https://via.placeholder.com/800x450.png?text=2048+Game+Screenshot)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- 🎮 Classic 2048 gameplay with keyboard controls
+- 🤖 AI player with Monte Carlo Tree Search algorithm
+- 🧠 Advanced AI strategies (corner strategy, snake pattern, etc.)
+- ⏱️ Game replay functionality with adjustable speed
+- 💾 Export and import game sessions
+- 🎛️ Adjustable AI speed settings
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Installation
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/2048-game.git
+cd 2048-game
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+# Install dependencies
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## How to Play
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Use **W/A/S/D** or arrow keys to move tiles
+- Combine tiles with the same number to create a tile with twice the value
+- Try to reach the 2048 tile!
+- Click **New Game** to restart
+- Use the **AI Auto Play** button to let the AI play for you
+- Use **Export Record** to save your game session
+- Use **Import Record** to load a previously saved game session
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## AI Implementation
+
+This game features an advanced AI player powered by Monte Carlo Tree Search (MCTS) with several heuristic improvements:
+
+### Key AI Strategies
+
+1. **Corner Strategy**: Keeps high-value tiles in the corners to maintain board flexibility
+2. **Snake Pattern**: Arranges numbers in a snake-like pattern to maintain monotonicity
+3. **Center Avoidance**: Avoids placing high-value tiles in the center
+4. **Merge Potential**: Prioritizes moves that create merge opportunities
+
+The AI evaluation function considers multiple factors:
+- Empty cell count
+- Monotonicity of rows and columns
+- Smoothness of the board
+- Position of high-value tiles
+- Potential for future merges
+
+## Technologies Used
+
+- **React 19**: UI framework
+- **TypeScript**: Type-safe JavaScript
+- **Vite**: Build tool and development server
+- **Jest**: Testing framework
+
+## Development
+
+```bash
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm run test
+
+# Test AI performance
+node test-ai-performance.cjs
 ```
+
+## Roadmap
+
+### Short-term Goals (Q3-Q4 2025)
+- 🌐 Internationalization support (add English language option)
+- ✨ Improved UI/UX with animations
+- 📊 High score tracking and leaderboard
+- 📱 Mobile-friendly responsive design
+
+### Mid-term Goals (Q1-Q2 2026)
+- 🎛️ Different board size options (3x3, 5x5, etc.)
+- 🎚️ Adjustable difficulty levels for AI
+- 🔄 PWA support for offline play
+- 🎯 Game statistics and analytics
+
+### Long-term Goals (Q3 2026+)
+- 🧠 Additional AI strategies beyond MCTS
+- ⚡ Performance optimizations
+- 🎮 Game mode variations
+- 🏆 Online multiplayer competitions
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
